@@ -1,0 +1,70 @@
+---
+title: "Final project"
+format: html
+---
+
+```{r}
+library(tidyverse)
+library(rvest)
+library(here)
+
+url <- "https://www.ncaa.com/stats/basketball-women/d1/current/individual/102"
+
+h <- read_html(url)
+
+tab <- h |> html_nodes("table")
+tab
+
+wbb_df <- tab[[1]] |> html_table(fill = TRUE)
+
+```
+
+Variables in the dataset:
+
+Rank: The rankings of highest points per game in descending order of the top 50 players
+Name: Name of the player
+Team: Name of the team the player is on
+CL: Class Level (Fr., So., Jr., or Sr.)
+Height: Height of the player
+Position: (G - Guard, F - Forward, C - Center)
+G: The number of games the player has played
+FGM: Field Goals Made, the # of baskets each player has successfully scored on
+3FG: 3 point field goals made by the athlete
+FT: Free Throws made by the athlete
+PTS: The number of total points scored by field goals per player
+PPG: Average points per game scored by the player
+
+Note: some of the players have "-" for rank, this means they have the same number of PPG as the person above them. 
+The rank is only valid for PPG, all other stats are just extra included
+
+
+Questions possible to explore: 
+Maybe use another data set of viewership per year and see other connections for a part 2
+
+visualizations: 
+Histogram of ppg by player - maybe add plotly to see exact ppg
+
+Distribution of class level
+
+Something with total points
+
+Boxplot of height
+
+Does height correlate with ppg: scatter plot
+
+```{r}
+ggplot(data = wbb_df, aes(x = Height, y = PTS)) +
+  geom_boxplot() +
+  theme_minimal()
+```
+
+
+
+
+
+
+
+
+
+
+
