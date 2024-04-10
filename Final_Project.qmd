@@ -7,6 +7,7 @@ format: html
 library(tidyverse)
 library(rvest)
 library(here)
+library(plotly)
 
 url <- "https://www.ncaa.com/stats/basketball-women/d1/current/individual/102"
 
@@ -16,6 +17,8 @@ tab <- h |> html_nodes("table")
 tab
 
 wbb_df <- tab[[1]] |> html_table(fill = TRUE)
+
+wbb_df
 
 ```
 
@@ -41,22 +44,50 @@ The rank is only valid for PPG, all other stats are just extra included
 Questions possible to explore: 
 Maybe use another data set of viewership per year and see other connections for a part 2
 
-visualizations: 
+Was Caitlin Clark the best player in the NCAA for Women's basketball in 2023-24 season?
+
+What other girls on her team are on the top scoring list?
+
+What is the comparison of girls on the USC team ppg stats compared to Iowa ppg stats?
+
+Did this relate to the outcome of the national championship game?
+(Iowa lost to USC)
+
+Conclusion: Even though Iowa lost while having the best player in the nation on their team, Iowa Women's basketball made a HUGE lasting impact on women's basketball and for women's sports in general. -> Find a source with attendance records and put that in conclusion
+
+Visualizations: 
 Histogram of ppg by player - maybe add plotly to see exact ppg
 
-Distribution of class level
 
 Something with total points
 
-Boxplot of height
 
 Does height correlate with ppg: scatter plot
 
+Let's look at the top 15 scorers by descending points per game. 
+
 ```{r}
-ggplot(data = wbb_df, aes(x = Height, y = PTS)) +
-  geom_boxplot() +
-  theme_minimal()
+top_15 <- wbb_df |> slice(1:20) |>
+  mutate(Name = fct_reorder(Name, PPG))
+
+score_plot <- ggplot(data = top_15, aes(x = Name,
+                                        y = PPG,
+                                        label = PPG)) +
+  geom_point(color = "brown4") +
+  geom_segment(aes(x = Name, xend = Name, y = 0, yend = PPG), color="orange") +
+  coord_flip() 
+
+ggplotly(score_plot, tooltip = "label")
 ```
+
+As we can see from this plot, Caitlin Clark dominates points per game statistics within the NCAA. Although the top 15 scorers are relatively close in value, Caitlin Clark has almost a 10 point margin from the next person behind her in points. This might not seem like much, but in the world of basketball, a 10 point difference in AVERAGE points per game is incredible and she is far above the pack for this. 
+
+```{r}
+wbb_df |> filter(Team == "Iowa")
+
+wbb_df |> filter(Team == "Southern California")
+```
+
 
 
 
