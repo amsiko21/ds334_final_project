@@ -48,10 +48,12 @@ Was Caitlin Clark the best player in the NCAA for Women's basketball in 2023-24 
 
 What other girls on her team are on the top scoring list?
 
-What is the comparison of girls on the USC team ppg stats compared to Iowa ppg stats?
+What is the comparison of girls on the SC team ppg stats compared to Iowa ppg stats?
+
+Which team has the most top 50 ranked players?
 
 Did this relate to the outcome of the national championship game?
-(Iowa lost to USC)
+(Iowa lost to SC)
 
 Conclusion: Even though Iowa lost while having the best player in the nation on their team, Iowa Women's basketball made a HUGE lasting impact on women's basketball and for women's sports in general. -> Find a source with attendance records and put that in conclusion
 
@@ -87,10 +89,98 @@ wbb_df |> filter(Team == "Iowa")
 
 wbb_df |> filter(Team == "Southern California")
 ```
+Which team has the most players in the top 50? 
+
+```{r}
+wbb_df |> group_by(Team) |>
+  mutate(count = case_when())
+```
+
+Do most made 3 pointers affect the top 15 list?
+
+```{r}
+three_pt <- wbb_df |> select(Name, `3FG`) |>
+  arrange(desc(`3FG`))|>
+  slice(1:15) |>
+  mutate(Name = fct_reorder(Name, `3FG`))
+
+three_plot <- ggplot(data = three_pt, aes(x = Name,
+                          y = `3FG`,
+                          label = `3FG`)) +
+  geom_point(color = "brown4") +
+  geom_segment(aes(x = Name, xend = Name, y = 0, yend = `3FG`), color="orange") +
+  coord_flip()
+
+ggplotly(three_plot, tooltip = "label")
+```
+
+Best # of players by class level?
+
+```{r}
+wbb_df |> group_by(Cl) |>
+  summarize(Name)
+```
+Might bring in another data set of iowa stats and SC stats
+
+```{r}
+url2 <- "https://www.espn.com/womens-college-basketball/team/stats/_/id/2294/iowa-hawkeyes"
+
+h2 <- read_html(url2)
+
+tab2 <- h2 |> html_nodes("table")
 
 
+iowa_df <- tab2[[2]] |> html_table(fill = TRUE)
+
+iowa_df
+```
+
+This is data from the Iowa Hawkeyes for the 2024 season, with 14 unnamed players so it is more team stats based
+
+```{r}
+url3 <- "https://www.espn.com/womens-college-basketball/team/stats/_/id/2579/south-carolina-gamecocks"
+
+h3 <- read_html(url3)
+
+tab3 <- h3 |> html_nodes("table")
 
 
+sc_df <- tab3[[2]] |> html_table(fill = TRUE)
+
+sc_df
+```
+This is data from the South Carolina Gamecocks for the 2024 season, with 12 unnamed players so it is more team stats based
+
+The reason for different number of players is simply because Iowa had more people on the court with stats to report overall
+
+```{r}
+iowa_df |> arrange(desc(MIN)) |>
+  slice(1:10) |>
+  summarize(points_avg = mean(PTS))
+```
+This is the points average for the top 10 most time played players on the Iowa team
+
+```{r}
+sc_df |> arrange(desc(MIN)) |>
+  slice(1:10) |>
+  summarize(points_avg = mean(PTS))
+```
+From this, we see Iowa has around 1 extra point average per game than South CArolina based on their top 10 most played players
+
+Same thing for FG%?
+
+... Iowa first
+
+```{r}
+iowa_df |> arrange(desc(MIN)) |>
+  slice(1:10) |>
+  summarize(fg_made = mean(`FG%`))
+
+sc_df |> arrange(desc(MIN)) |>
+  slice(1:10) |>
+  summarize(fg_made = mean(`FG%`))
+```
+As we can see by this, Iowa has a higher percent of field goals made still by the top 10 with the most minutes, by around 2%.
 
 
 
