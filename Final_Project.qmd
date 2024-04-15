@@ -86,14 +86,12 @@ As we can see from this plot, Caitlin Clark dominates points per game statistics
 
 ```{r}
 wbb_df |> filter(Team == "Iowa")
-
-wbb_df |> filter(Team == "Southern California")
 ```
-Which team has the most players in the top 50? 
+Which team has the most players in the top 50? (come back to this)
 
 ```{r}
-wbb_df |> group_by(Team) |>
-  mutate(count = case_when())
+#wbb_df |> group_by(Team) |>
+  #mutate(count = case_when())
 ```
 
 Do most made 3 pointers affect the top 15 list?
@@ -120,7 +118,14 @@ Best # of players by class level?
 wbb_df |> group_by(Cl) |>
   summarize(Name)
 ```
-Might bring in another data set of iowa stats and SC stats
+
+After looking at best players by points per game, Caitlin Clark is the obvious top performer. This is where I want to start looking at team data between Iowa, the team Caitlin is on, and South Carolina the team that won over Iowa in the Final Game of March Madness for the championship.  
+
+
+
+
+
+
 
 ```{r}
 url2 <- "https://www.espn.com/womens-college-basketball/team/stats/_/id/2294/iowa-hawkeyes"
@@ -154,34 +159,68 @@ This is data from the South Carolina Gamecocks for the 2024 season, with 12 unna
 The reason for different number of players is simply because Iowa had more people on the court with stats to report overall
 
 ```{r}
-iowa_df |> arrange(desc(MIN)) |>
-  slice(1:10) |>
-  summarize(points_avg = mean(PTS))
-```
-This is the points average for the top 10 most time played players on the Iowa team
+library(pander)
 
-```{r}
-sc_df |> arrange(desc(MIN)) |>
+summary_iowa <- iowa_df |> 
+  arrange(desc(MIN)) |>
   slice(1:10) |>
   summarize(points_avg = mean(PTS))
+
+summary_south_carolina <- sc_df |>
+  arrange(desc(MIN)) |>
+  slice(1:10) |>
+  summarize(points_avg = mean(PTS))
+
+combined_summary <- bind_rows(
+  mutate(summary_iowa, Team = "Iowa"),
+  mutate(summary_south_carolina, Team = "South Carolina")) |>
+  pander()
 ```
+
 From this, we see Iowa has around 1 extra point average per game than South CArolina based on their top 10 most played players
+
 
 Same thing for FG%?
 
 ... Iowa first
 
 ```{r}
-iowa_df |> arrange(desc(MIN)) |>
+summary_iowa2 <- iowa_df |> 
+  arrange(desc(MIN)) |>
   slice(1:10) |>
   summarize(fg_made = mean(`FG%`))
 
-sc_df |> arrange(desc(MIN)) |>
+summary_south_carolina2 <- sc_df |>
+  arrange(desc(MIN)) |>
   slice(1:10) |>
   summarize(fg_made = mean(`FG%`))
+
+combined_summary2 <- bind_rows(
+  mutate(summary_iowa2, Team = "Iowa"),
+  mutate(summary_south_carolina2, Team = "South Carolina")) |>
+  pander()
 ```
-As we can see by this, Iowa has a higher percent of field goals made still by the top 10 with the most minutes, by around 2%.
 
+As we can see by this, Iowa has a higher percent of field goals made still by the top 10 with the most minutes, by nearly 2%.
+
+
+Still wokring on this and picking the right visualization
+
+```{r}
+iowa_df$Team <- "Iowa"
+
+sc_df$Team <- "South Carolina"
+
+combined_df <- rbind(iowa_df, sc_df)
+
+ggplot(combined_df, aes(x = Team, y = PTS, fill = Team)) +
+  geom_point(stat = "identity", position = position_dodge(width = 0.7)) +
+  labs(title = "Comparison of Stats: Iowa vs. South Carolina") +
+  theme_minimal() +
+  theme(legend.position = "top") #+
+  #scale_fill_manual(values = c("Iowa" = "blue", "South Carolina" = "red"))
+
+```
 
 
 
