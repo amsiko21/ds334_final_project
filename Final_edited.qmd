@@ -1,0 +1,42 @@
+---
+title: "Final Edited"
+author: "Abby Sikora"
+format: 
+  html:
+    embed-resources: true
+---
+Question: 
+Did South Carolina deserve the win over Iowa in the NCAA National Championship for women's basketball?
+
+Iowa Dataset
+
+```{r}
+url2 <- "https://www.espn.com/womens-college-basketball/team/stats/_/id/2294/iowa-hawkeyes"
+
+h2 <- read_html(url2)
+
+tab2 <- h2 |> html_nodes("table")
+
+
+iowa_df <- tab2[[2]] |> html_table(fill = TRUE)
+
+iowa_df
+```
+(Going to manually enter this into excel and add names column I can't figure out why r is separating the table from itself)
+
+This data set includes variables:
+
+NAME: Name of player
+GP: Games played
+MIN: Minutes played per game
+PTS: Points per game
+REB: Rebounds per game
+AST: Assists per game
+STL: Steals per game
+BLK: Blocks per game
+TO: Turnovers per game
+FG%: Field Goal percentage 
+FT%: Free throw percentage
+
+
+

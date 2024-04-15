@@ -19,7 +19,6 @@ tab
 wbb_df <- tab[[1]] |> html_table(fill = TRUE)
 
 wbb_df
-
 ```
 
 Variables in the dataset:
@@ -39,7 +38,6 @@ PPG: Average points per game scored by the player
 
 Note: some of the players have "-" for rank, this means they have the same number of PPG as the person above them. 
 The rank is only valid for PPG, all other stats are just extra included
-
 
 Questions possible to explore: 
 Maybe use another data set of viewership per year and see other connections for a part 2
@@ -122,11 +120,6 @@ wbb_df |> group_by(Cl) |>
 After looking at best players by points per game, Caitlin Clark is the obvious top performer. This is where I want to start looking at team data between Iowa, the team Caitlin is on, and South Carolina the team that won over Iowa in the Final Game of March Madness for the championship.  
 
 
-
-
-
-
-
 ```{r}
 url2 <- "https://www.espn.com/womens-college-basketball/team/stats/_/id/2294/iowa-hawkeyes"
 
@@ -177,7 +170,7 @@ combined_summary <- bind_rows(
   pander()
 ```
 
-From this, we see Iowa has around 1 extra point average per game than South CArolina based on their top 10 most played players
+From this, we see Iowa has around 1 extra point average per game than South Carolina based on their top 10 most played players
 
 
 Same thing for FG%?
