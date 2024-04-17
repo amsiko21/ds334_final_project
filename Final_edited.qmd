@@ -11,6 +11,9 @@ Did South Carolina deserve the win over Iowa in the NCAA National Championship f
 Iowa Dataset
 
 ```{r}
+library(tidyverse)
+library(readr)
+library(here)
 #Iowa
 url2 <- "https://www.espn.com/womens-college-basketball/team/stats/_/id/2294/iowa-hawkeyes"
 
@@ -18,10 +21,13 @@ h2 <- read_html(url2)
 
 tab2 <- h2 |> html_nodes("table")
 
+#stats with no names
+iowa_df <- tab2[[4]] |> html_table(fill = TRUE)
 
-iowa_df <- tab2[[2]] |> html_table(fill = TRUE)
+#names table
+iowa_df2 <- tab2[[3]] |> html_table(fill = TRUE)
 
-iowa_df
+iowa_stats <- bind_cols(iowa_df2, iowa_df)
 
 #South Carolina
 
@@ -31,38 +37,48 @@ h3 <- read_html(url3)
 
 tab3 <- h3 |> html_nodes("table")
 
+#stats with no names
+sc_df <- tab3[[4]] |> html_table(fill = TRUE)
 
-sc_df <- tab3[[2]] |> html_table(fill = TRUE)
+#names table
+sc_df2 <- tab3[[3]] |> html_table(fill = TRUE)
 
-sc_df
+sc_stats <- bind_cols(sc_df2, sc_df)
+
 ```
-(Going to manually enter this into excel and add names column I can't figure out why r is separating the table from itself)
+THe data sets above are season statistics for women's NCAA basketball teams the Iowa Hawkeyes and t
 
 These data sets includes variables:
 
-(NAME: Name of player) - working on this
-GP: Games played
-MIN: Minutes played per game
-PTS: Points per game
-REB: Rebounds per game
-AST: Assists per game
-STL: Steals per game
-BLK: Blocks per game
-TO: Turnovers per game
-FG%: Field Goal percentage 
-FT%: Free throw percentage
+Name: Name of the player
+MIN: Minutes Per Game
+FGM: Field Goals Made
+FGA: Field Goals Attempted
+FTM: Free Throws Made
+FTA: Free Throws Attempted
+3PM: 3-Pointers Made
+3PA: 3-Pointers Attempted
+PTS: Points
+OR: Offensive Rebounds
+DR: Defensive Rebounds
+REB: Rebounds (Offensive and Defensive Total)
+AST: Assists
+TO: Turnovers
+STL: Steals
+BLK: Blocks
 
-First, let's compare points per game between the teams. To make this data even, we will only look at the top ten players for each team because they have a different amount of players. 
+
+First, let's compare points between the teams. To make this data even, we will only look at the top ten players for amount of time playes (MIN) from each team because they have a different amount of players for this and the following few tables. 
 
 ```{r}
 library(pander)
 
-summary_iowa <- iowa_df |> 
+summary_iowa <- iowa_stats |> 
   arrange(desc(MIN)) |>
   slice(1:10) |>
   summarize(points_avg = mean(PTS))
 
-summary_south_carolina <- sc_df |>
+summary_south_carolina <- sc_stats |>
   arrange(desc(MIN)) |>
   slice(1:10) |>
   summarize(points_avg = mean(PTS))
@@ -72,54 +88,55 @@ combined_summary <- bind_rows(
   mutate(summary_south_carolina, Team = "South Carolina")) |>
   pander()
 ```
+From this table, we see that Iowa has 27.4 more points on average for the season. To analyze this number further, I want to look at Field Goals Made, because the number of points doesn't tell us much on it's own.
 
-As we can see from the table above, on average Iowa has barely one more point per game compared to South Carolina, which isn't much of a margin.
-
-Now let's look at Field Goal percentage made for each team.
+Now let's look at Field Goals Made for each team.
 
 ```{r}
-summary_iowa2 <- iowa_df |> 
+summary_iowa2 <- iowa_stats |> 
   arrange(desc(MIN)) |>
   slice(1:10) |>
-  summarize(fg_made = mean(`FG%`))
+  summarize(fg_made = mean(FGM))
 
-summary_south_carolina2 <- sc_df |>
+summary_south_carolina2 <- sc_stats |>
   arrange(desc(MIN)) |>
   slice(1:10) |>
-  summarize(fg_made = mean(`FG%`))
+  summarize(fg_made = mean(FGM))
 
 combined_summary2 <- bind_rows(
   mutate(summary_iowa2, Team = "Iowa"),
   mutate(summary_south_carolina2, Team = "South Carolina")) |>
   pander()
 ```
-From the table above, on average we see that Iowa again has a better number than South Carolina this time looking at % Field goals made on average, with a bigger margin this time of around 2% more. 
 
-Lastly on the average stats by team, I want to look at free throw percentage, because in basketball free throws can be game winning and barely change the points per game average, simply because they are only worth one point. THis will give me insight to see if it came down to the wire in a game winning free throw, which tram would have the better assumed chance of making it. 
+From this table, we can see that this time, South Carolina has a better number but not by much(<1). This tells us that although Iowa has a higher average of points total, the accuracy of the two teams is pretty similar when it comes to average field goals actually made. An explanation for the first table could be Iowa may have a higher number of 3 pointers, so I want to look at that next. 
 
 ```{r}
-summary_iowa3 <- iowa_df |> 
+summary_iowa3 <- iowa_stats |> 
   arrange(desc(MIN)) |>
   slice(1:10) |>
-  summarize(fg_made = mean(`FT%`))
+  summarize(`3s_made` = mean(`3PM`))
 
-summary_south_carolina3 <- sc_df |>
+summary_south_carolina3 <- sc_stats |>
   arrange(desc(MIN)) |>
   slice(1:10) |>
-  summarize(fg_made = mean(`FT%`))
+  summarize(`3s_made` = mean(`3PM`))
 
 combined_summary3 <- bind_rows(
   mutate(summary_iowa3, Team = "Iowa"),
   mutate(summary_south_carolina3, Team = "South Carolina")) |>
   pander()
 ```
-From this we see both excellent percentages for free throws both above the 50% mark. Iowa is almost around 74% and South Carolina is closer to 67%. We can see that Iowa would have a better chance of making a free throw if it came down to the wire based on average team stats. 
+From this, we can see something that I had a feeling about from the previous tables. Iowa has almost double the amount of three pointers made than South Carolina. This tells us that the points average has a bigger margin of difference between the teams because Iowa simply scores higher value points more often than South Carolina.
 
 
-attempting to add name column back to data set through excel
-```{r}
-#wbb_df <- read_csv(here("data/Final_wbb_df.csv"))
-```
+
+
+
+
+
+
+
 
 
 
