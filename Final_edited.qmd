@@ -5,10 +5,11 @@ format:
   html:
     embed-resources: true
 ---
-Question: 
-Should Iowa have won the NCAA National Championship for women's basketball?
+Intro: 
 
-Iowa Dataset
+The South Carolina Gamecock's won the NCAA D1 Women's Basketball Championship this year(2024), against the Iowa Hawkeyes. For the 2024 Season, I want to compare total season stats for both Iowa and South Carolina, see who their top players are, and just from some basic comparisons which team should've won the Championship. Other questions will also come up along the way.
+
+Iowa Data set
 
 ```{r}
 library(tidyverse)
@@ -49,13 +50,15 @@ sc_stats <- bind_cols(sc_df2, sc_df)
 
 ```
 
-The data sets above are season statistics for women's NCAA basketball teams the Iowa Hawkeyes and the South Carolina Gamecocks.
+The data sets above are season total statistics for the 2024 women's NCAA basketball teams the Iowa Hawkeyes and the South Carolina Gamecocks. 
+
+The Iowa data set has 14 rows and 16 columns, and the South Carolina data set has 12 rows and 16 columns. The rows are each player plus an extra row for total for the team in both sets, and the columns are the same in both sets as follows. 
 
 These data sets includes variables:
 
 Name: Name of the player
 
-MIN: Minutes Per Game
+MIN: Minutes Played
 
 FGM: Field Goals Made
 
@@ -86,19 +89,19 @@ STL: Steals
 BLK: Blocks
 
 
-First, let's compare points between the teams. To make this data even, we will only look at the top ten players for amount of time players (MIN) from each team because they have a different amount of players for this and the following few tables. 
+First, let's compare points between the teams. To make this data even, we will only look at the top 7 players for amount of time players (MIN) from each team to try to compare only the starters since their are 5 players on the court at once, and probably 1 or 2 regular subbed in players. 
 
 ```{r}
 library(pander)
 
 summary_iowa <- iowa_stats |> 
   arrange(desc(MIN)) |>
-  slice(1:10) |>
+  slice(1:7) |>
   summarize(points_avg = mean(PTS))
 
 summary_south_carolina <- sc_stats |>
   arrange(desc(MIN)) |>
-  slice(1:10) |>
+  slice(1:7) |>
   summarize(points_avg = mean(PTS))
 
 combined_summary <- bind_rows(
@@ -106,19 +109,20 @@ combined_summary <- bind_rows(
   mutate(summary_south_carolina, Team = "South Carolina")) |>
   pander()
 ```
-From this table, we see that Iowa has 27.4 more points on average for the season. To analyze this number further, I want to look at Field Goals Made, because the number of points doesn't tell us much on it's own.
+From this table, we see that out of the starters and possible subs, Iowa has 60.2 more points on average for the season than South Carolina. To analyze this number further, I want to look at Field Goals Made, because the number of points doesn't tell us much on it's own knowing each basket has a different point value.
 
 Now let's look at Field Goals Made for each team. The difference between FGM and PTS is that FGM is the count of baskets made by each team, and PTS is the total number of points the team has by the point value of the Field Goal scored (1 - free throw, 2 - from inside the arch or 3 - anywhere beyond the arch).
 
 ```{r}
 summary_iowa2 <- iowa_stats |> 
   arrange(desc(MIN)) |>
-  slice(1:10) |>
+  slice(1:7) |>
   summarize(fg_made = mean(FGM))
+
 
 summary_south_carolina2 <- sc_stats |>
   arrange(desc(MIN)) |>
-  slice(1:10) |>
+  slice(1:7) |>
   summarize(fg_made = mean(FGM))
 
 combined_summary2 <- bind_rows(
@@ -127,17 +131,17 @@ combined_summary2 <- bind_rows(
   pander()
 ```
 
-From this table, we can see that this time, South Carolina has a better number but not by much(<1). This tells us that although Iowa has a higher average of points total, the accuracy of the two teams is pretty similar when it comes to average field goals actually made. An explanation for the first table could be Iowa may have more high value points, so I want to look at that next. 
+From this table, Iowa has a better average for field goals made with 5.3 more made on average than South Carolina. This tells us that Iowa has a higher average of points total, but the accuracy of the two teams is relatively similar when it comes to average field goals actually made. An explanation for the first number being much higher could be that Iowa may have more high value points, so I want to look at that next. 
 
 ```{r}
 summary_iowa3 <- iowa_stats |> 
   arrange(desc(MIN)) |>
-  slice(1:10) |>
+  slice(1:7) |>
   summarize(`3s_made` = mean(`3PM`))
 
 summary_south_carolina3 <- sc_stats |>
   arrange(desc(MIN)) |>
-  slice(1:10) |>
+  slice(1:7) |>
   summarize(`3s_made` = mean(`3PM`))
 
 combined_summary3 <- bind_rows(
@@ -147,9 +151,9 @@ combined_summary3 <- bind_rows(
 ```
 From this, we can see something that I had a feeling about from the previous tables. Iowa has almost double the amount of three pointers made than South Carolina. This tells us that the points average has a bigger margin of difference between the teams because Iowa simply scores higher value points more often than South Carolina.
 
-Next out of curiosity after seeing the first few numbers, I want to compare the teams by overall points per season, seeing if there are any outliers on either team skewing these average numbers. 
+Next out of curiosity after seeing the first few numbers, I want to compare the teams visually by overall points per season, seeing if there are any outliers on either team skewing these average numbers. 
 
-(Instead of looking at top ten players by Minute, we will just look at all the players on each team to get a better comparison as a whole.)
+(Instead of looking at top 7 players by Minute, we will just look at all the players on each team to get a better comparison as a whole.)
 
 ```{r}
 library(plotly)
@@ -191,7 +195,7 @@ sc_plot1 <- ggplot(data = sc_ppg, aes(x = Name,
 ggplotly(sc_plot1, tooltip = "label")
 ```
 
-From analyzing these two plots, we see something really interesting. Right off the bat, we see that as a team, South Carolina looks like it has more even scoring between players, with a smooth decreasing trend from the top scorer. Iowa on the other hand, seems to have an outlier right at the top. Caitlin Clark(1234) has 724 more points than the next best scorer on the team(510), and that is more points than the top scorer on South Carolina has total(474). 
+From analyzing these two plots, we see something really interesting. Right off the bat, we see that as a team, South Carolina looks like it has more even scoring between players, with a smooth decreasing trend from the top scorer. Iowa on the other hand, seems to have an outlier right at the top. Caitlin Clark(1234) has 724 more points than the next best scorer on her team(510), and that is more points than the top scorer on South Carolina has total(474). 
 
 This answers some grey area we had with the average points comparison between teams. Caitlin Clark is an obvious outlier here even looking at both teams. 
 
@@ -218,12 +222,15 @@ clark_stats <- bind_cols(df1, caitlinclark_df)
 ```
 
 
+
 ```{r}
 #to look at all data without total
 clark_df <- clark_stats|> slice(1:4)
 
 ggplot(data = clark_df, aes(x = season, y = PTS)) +
   geom_col(color = "red", fill = "white")
+
+
 ```
 
 
