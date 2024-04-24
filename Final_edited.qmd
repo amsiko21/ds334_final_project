@@ -197,12 +197,34 @@ This answers some grey area we had with the average points comparison between te
 
 Next...
 
-- Linear model? 
-- Shiny app to compare players?
+Has Caitlin Clark always been this good? 
+
+Read in new data sets from freshman-junior year
+
+```{r}
+url4 <- "https://www.espn.com/womens-college-basketball/player/stats/_/id/4433403/caitlin-clark"
+
+h4 <- read_html(url4)
+
+tab4 <- h4 |> html_nodes("table")
+
+#stats with no names
+caitlinclark_df <- tab4[[4]] |> html_table(fill = TRUE)
+
+#names table
+df1 <- tab4[[5]] |> html_table(fill = TRUE)
+
+clark_stats <- bind_cols(df1, caitlinclark_df)
+```
 
 
+```{r}
+#to look at all data without total
+clark_df <- clark_stats|> slice(1:4)
 
-
+ggplot(data = clark_df, aes(x = season, y = PTS)) +
+  geom_col(color = "red", fill = "white")
+```
 
 
 
