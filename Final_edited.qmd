@@ -221,20 +221,29 @@ df1 <- tab4[[5]] |> html_table(fill = TRUE)
 clark_stats <- bind_cols(df1, caitlinclark_df)
 ```
 
-
-
 ```{r}
-#to look at all data without total
-clark_df <- clark_stats|> slice(1:4)
-
-ggplot(data = clark_df, aes(x = season, y = PTS)) +
-  geom_col(color = "red", fill = "white")
-
-
+ggplot(clark_df, aes(x = season, y = PTS)) +
+  geom_bar(stat = "identity", fill = "skyblue", color = "blue") +
+  labs(title = "Points (PTS) by Season", x = "Season", y = "PTS")
 ```
 
+```{r}
+ggplot(clark_df, aes(x = season, y = REB)) +
+  geom_bar(stat = "identity", fill = "lightgreen", color = "green4") +
+  labs(title = "Rebounds (REB) by Season", x = "Season", y = "REB")
+```
 
+```{r}
+ggplot(clark_df, aes(x = season, y = AST)) +
+  geom_bar(stat = "identity", fill = "orange", color = "orange4") +
+  labs(title = "Assists (AST) by Season", x = "Season", y = "AST")
+```
 
+```{r}
+ggplot(clark_df, aes(x = season, y = TO)) +
+  geom_bar(stat = "identity", fill = "lightcoral", color = "red") +
+  labs(title = "Turnovers (TO) by Season", x = "Season", y = "TO")
+```
 
 
 
