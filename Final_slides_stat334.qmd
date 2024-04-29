@@ -1,0 +1,106 @@
+---
+title: "Final Project Presentation"
+subtitle: "Abby Sikora"
+execute: 
+  echo: false
+  warning: false
+format: 
+  revealjs:
+    embed-resources: true
+---
+
+```{r}
+library(tidyverse)
+library(readr)
+library(here)
+library(rvest)
+
+#Iowa
+url2 <- "https://www.espn.com/womens-college-basketball/team/stats/_/id/2294/iowa-hawkeyes"
+
+h2 <- read_html(url2)
+
+tab2 <- h2 |> html_nodes("table")
+
+#stats with no names
+iowa_df <- tab2[[4]] |> html_table(fill = TRUE)
+
+#names table
+iowa_df2 <- tab2[[3]] |> html_table(fill = TRUE)
+
+iowa_stats <- bind_cols(iowa_df2, iowa_df)
+
+#South Carolina
+
+url3 <- "https://www.espn.com/womens-college-basketball/team/stats/_/id/2579/south-carolina-gamecocks"
+
+h3 <- read_html(url3)
+
+tab3 <- h3 |> html_nodes("table")
+
+#stats with no names
+sc_df <- tab3[[4]] |> html_table(fill = TRUE)
+
+#names table
+sc_df2 <- tab3[[3]] |> html_table(fill = TRUE)
+
+sc_stats <- bind_cols(sc_df2, sc_df)
+
+```
+
+
+## Data Introduction
+
+* 2 data sets, NCAA Women's basketball 2024
+* Iowa - 14 players
+* South Carolina - 12 players
+* Both have 16 columns including stats like MIN(minutes), PTS(points), 3PM(3 pointers made), BLK(blocks) etc.
+
+## Question?
+
+I want to compare total season stats for both Iowa and South Carolina, see who their top players are, and just from some basic comparisons which team should've won the Championship
+
+
+## Visualization 1
+
+```{r}
+sc_ppg <- sc_stats |> select(Name, PTS) |>
+  arrange(desc(PTS))|>
+  slice(2:12) |>
+  mutate(Name = fct_reorder(Name, PTS))
+
+sc_plot1 <- ggplot(data = sc_ppg, aes(x = Name,
+                          y = PTS,
+                          label = PTS)) +
+  geom_point(color = "black") +
+  geom_segment(aes(x = Name, xend = Name, y = 0, yend = PTS), color="red4") +
+  coord_flip() +
+  theme_minimal(base_size = 15) +
+  theme(plot.background = element_rect(fill = "grey1"),
+        axis.text = element_text(colour = "red3", size = rel(1)))
+
+ggplotly(sc_plot1, tooltip = "label")
+```
+
+## Visualization 2
+
+```{r}
+library(plotly)
+
+iowa_ppg <- iowa_stats |> select(Name, PTS) |>
+  arrange(desc(PTS))|> 
+  slice(2:13) |>
+  mutate(Name = fct_reorder(Name, PTS))
+
+iowa_plot1 <- ggplot(data = iowa_ppg, aes(x = Name,
+                              y = PTS,
+                              label = PTS)) +
+  geom_point(color = "black") +
+  geom_segment(aes(x = Name, xend = Name, y = 0, yend = PTS), color="yellow") +
+  coord_flip() +
+  theme_minimal(base_size = 15) +
+  theme(plot.background = element_rect(fill = "grey1"),
+        axis.text = element_text(colour = "yellow", size = rel(1))) 
+
+ggplotly(iowa_plot1, tooltip = "label")
+```

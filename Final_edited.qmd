@@ -227,11 +227,15 @@ ggplot(clark_df, aes(x = season, y = PTS)) +
   labs(title = "Points (PTS) by Season", x = "Season", y = "PTS")
 ```
 
+From this plot we see that from her freshman year, Caitlin had recorded around 800 points on the season. She has gotten progressively better, ending with her 2024 season total of 1234 points. It looks like she wasn't as good freshman year, but looking at the numbers we just see that she was already really good freshman year, she just took it to a whole new level years later especially her senior year. 
+
 ```{r}
 ggplot(clark_df, aes(x = season, y = REB)) +
   geom_bar(stat = "identity", fill = "lightgreen", color = "green4") +
   labs(title = "Rebounds (REB) by Season", x = "Season", y = "REB")
 ```
+Looking at rebounds we see the same thing, her freshman year number is very good for # of rebounds on the season, but she takes it to another level when looking at preceding years with senior year at around almost 300 rebounds on the season. 
+
 
 ```{r}
 ggplot(clark_df, aes(x = season, y = AST)) +
@@ -245,6 +249,12 @@ ggplot(clark_df, aes(x = season, y = TO)) +
   labs(title = "Turnovers (TO) by Season", x = "Season", y = "TO")
 ```
 
+
+Slides:
+
+Introduce data
+
+a couple of visualizations (1 or 2)
 
 
 
