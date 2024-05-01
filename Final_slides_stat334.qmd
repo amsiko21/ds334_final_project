@@ -51,7 +51,8 @@ sc_stats <- bind_cols(sc_df2, sc_df)
 
 ## Data Introduction
 
-* 2 data sets, NCAA Women's basketball 2024
+* 2 data sets, NCAA Women's basketball stats for 2024 season
+* Compared winning teams from the tournament
 * Iowa - 14 players
 * South Carolina - 12 players
 * Both have 16 columns including stats like MIN(minutes), PTS(points), 3PM(3 pointers made), BLK(blocks) etc.
@@ -64,6 +65,8 @@ I want to compare total season stats for both Iowa and South Carolina, see who t
 ## Visualization 1
 
 ```{r}
+library(plotly)
+
 sc_ppg <- sc_stats |> select(Name, PTS) |>
   arrange(desc(PTS))|>
   slice(2:12) |>
@@ -72,6 +75,7 @@ sc_ppg <- sc_stats |> select(Name, PTS) |>
 sc_plot1 <- ggplot(data = sc_ppg, aes(x = Name,
                           y = PTS,
                           label = PTS)) +
+  ylim(0, 1400) +
   geom_point(color = "black") +
   geom_segment(aes(x = Name, xend = Name, y = 0, yend = PTS), color="red4") +
   coord_flip() +
@@ -95,6 +99,7 @@ iowa_ppg <- iowa_stats |> select(Name, PTS) |>
 iowa_plot1 <- ggplot(data = iowa_ppg, aes(x = Name,
                               y = PTS,
                               label = PTS)) +
+  ylim(0, 1400) +
   geom_point(color = "black") +
   geom_segment(aes(x = Name, xend = Name, y = 0, yend = PTS), color="yellow") +
   coord_flip() +
@@ -104,3 +109,22 @@ iowa_plot1 <- ggplot(data = iowa_ppg, aes(x = Name,
 
 ggplotly(iowa_plot1, tooltip = "label")
 ```
+
+## Findings
+
+* Caitlin Clark(1234) has 724 more points than the next best scorer on her team(510), and that is more points than the top scorer on South Carolina has total(474), also more than the top two scorers on SC combined. 
+
+## Additional Work
+
+* Read in a Caitlin Clark data set
+* She has always been this good, she continuously takes it to another level
+
+## Conclusion
+
+```{r}
+library(knitr)
+library(here)
+clark <- ("~/Home/Desktop/ds334_final_project/clark.jpeg")
+include_graphics(here("clark.jpeg"))
+```
+
