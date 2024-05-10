@@ -1,15 +1,18 @@
 ---
-title: "Final Edited"
+title: "STAT334 Final Project"
 author: "Abby Sikora"
 format: 
   html:
     embed-resources: true
 ---
+Abstract: 
+
+Women's college basketball has been on the more popular side for women's sports. This year (2024), viewership hit an all time high and history was made. Findings of this report include pointing out Caitlin Clark as a true outlier, one of the best of all time, and someone who will be interesting to study as she moves onto her career in the WNBA. RElevant data includes season total data from both chapionship teams, and historical season total Caitlin Clark data through all 4 years of her being on the Iowa Hawkeyes. 
+
 Intro: 
 
-The South Carolina Gamecock's won the NCAA D1 Women's Basketball Championship this year(2024), against the Iowa Hawkeyes. For the 2024 Season, I want to compare total season stats for both Iowa and South Carolina, see who their top players are, and just from some basic comparisons which team should've won the Championship. Other questions will also come up along the way.
+The South Carolina Gamecock's won the NCAA D1 Women's Basketball Championship this year(2024), against the Iowa Hawkeyes. For the 2024 Season, I want to compare total season stats for both Iowa and South Carolina, see who their top players are, and just from some basic comparisons which team should've won the Championship. Other questions will also come up along the way. 
 
-Iowa Data set
 
 ```{r}
 library(tidyverse)
@@ -50,7 +53,7 @@ sc_stats <- bind_cols(sc_df2, sc_df)
 
 ```
 
-The data sets above are season total statistics for the 2024 women's NCAA basketball teams the Iowa Hawkeyes and the South Carolina Gamecocks. 
+The data sets above are season total statistics for the 2024 women's NCAA basketball teams the Iowa Hawkeyes and the South Carolina Gamecocks, and was scraped from the ESPN website for women's NCAA basketball. 
 
 The Iowa data set has 14 rows and 16 columns, and the South Carolina data set has 12 rows and 16 columns. The rows are each player plus an extra row for total for the team in both sets, and the columns are the same in both sets as follows. 
 
@@ -89,7 +92,7 @@ STL: Steals
 BLK: Blocks
 
 
-First, let's compare points between the teams. To make this data even, we will only look at the top 7 players for amount of time players (MIN) from each team to try to compare only the starters since their are 5 players on the court at once, and probably 1 or 2 regular subbed in players. 
+First, let's compare points between the teams. Initially, we can see that Iowa has more players on their team than South Carolina. To prevent comparing inaccurate/fair numbers, we will only look at the top 7 players with the most time (MIN) on the court from each team to try to compare only the starters. I chose the number 7 because their are 5 players on the court at once, and probably 1 or 2 regularly subbed in players. 
 
 ```{r}
 library(pander)
@@ -151,10 +154,56 @@ combined_summary3 <- bind_rows(
 ```
 From this, we can see something that I had a feeling about from the previous tables. Iowa has almost double the amount of three pointers made than South Carolina. This tells us that the points average has a bigger margin of difference between the teams because Iowa simply scores higher value points more often than South Carolina.
 
+Although free throws are only worth 1 point, they are pretty frequent during games and can be game winning in certain situations. In my opinion, free throws have an extra level of pressure. They seem like "free" points because it is shooting on an open basket, but the expectation the ball is going to go in can really mess with the head of the player especially in high pressure situations regardless of free throws. Looking at the free throw stat will obviously help me see which team scored more on average, but also maybe give me an idea of which team does better under pressure. 
+
+```{r}
+summary_iowa4 <- iowa_stats |> 
+  arrange(desc(MIN)) |>
+  slice(1:7) |>
+  summarize(`FT_made` = mean(`FTM`))
+
+summary_south_carolina4 <- sc_stats |>
+  arrange(desc(MIN)) |>
+  slice(1:7) |>
+  summarize(`FT_made` = mean(`FTM`))
+
+combined_summary4 <- bind_rows(
+  mutate(summary_iowa4, Team = "Iowa"),
+  mutate(summary_south_carolina4, Team = "South Carolina")) |>
+  pander()
+```
+From this, we see that Iowa has a higher number of free throws made on average with 24.58 more made. This doesn't give a definitive answer on anything, but in terms of making a play that could mean a lot under pressure, Iowa looks like they have a slight advantage here.
+
 Next out of curiosity after seeing the first few numbers, I want to compare the teams visually by overall points per season, seeing if there are any outliers on either team skewing these average numbers. 
 
-(Instead of looking at top 7 players by Minute, we will just look at all the players on each team to get a better comparison as a whole.)
+(Instead of looking at top 7 players by Minute, we will just look at all the players on each team to get a better comparison as a whole and also since there are no averages being taken.)
 
+
+First for South Carolina,
+```{r}
+library(plotly)
+
+sc_ppg <- sc_stats |> select(Name, PTS) |>
+  arrange(desc(PTS))|>
+  slice(2:12) |>
+  mutate(Name = fct_reorder(Name, PTS))
+
+sc_plot1 <- ggplot(data = sc_ppg, aes(x = Name,
+                          y = PTS,
+                          label = PTS)) +
+  ylim(0, 1400) +
+  geom_point(color = "black") +
+  geom_segment(aes(x = Name, xend = Name, y = 0, yend = PTS), color="red4") +
+  coord_flip() +
+  theme_minimal(base_size = 15) +
+  theme(plot.background = element_rect(fill = "grey1"),
+        axis.text = element_text(colour = "red3", size = rel(1)))
+
+ggplotly(sc_plot1, tooltip = "label")
+```
+
+
+Then for Iowa...
 ```{r}
 library(plotly)
 
@@ -174,87 +223,108 @@ iowa_plot1 <- ggplot(data = iowa_ppg, aes(x = Name,
 
 ggplotly(iowa_plot1, tooltip = "label")
 ```
-Same thing for South Carolina...
 
-
-```{r}
-sc_ppg <- sc_stats |> select(Name, PTS) |>
-  arrange(desc(PTS))|>
-  slice(2:12) |>
-  mutate(Name = fct_reorder(Name, PTS))
-
-sc_plot1 <- ggplot(data = sc_ppg, aes(x = Name,
-                          y = PTS,
-                          label = PTS)) +
-  geom_point(color = "black") +
-  geom_segment(aes(x = Name, xend = Name, y = 0, yend = PTS), color="red4") +
-  coord_flip() +
-  theme(plot.background = element_rect(fill = "grey1"),
-        axis.text = element_text(colour = "red3", size = rel(1)))
-
-ggplotly(sc_plot1, tooltip = "label")
-```
-
-From analyzing these two plots, we see something really interesting. Right off the bat, we see that as a team, South Carolina looks like it has more even scoring between players, with a smooth decreasing trend from the top scorer. Iowa on the other hand, seems to have an outlier right at the top. Caitlin Clark(1234) has 724 more points than the next best scorer on her team(510), and that is more points than the top scorer on South Carolina has total(474). 
+From analyzing these two plots, we see something really interesting. Right off the bat, we see that as a team, South Carolina looks like it has more even scoring between players, with a smooth decreasing trend from the top scorer. Iowa on the other hand, seems to have an outlier right at the top. Caitlin Clark(1234) has 724 more points than the next best scorer on her team(510), and that is more points than the top scorer on South Carolina has total(474), and the top two scorers on South Carolina combined. 
 
 This answers some grey area we had with the average points comparison between teams. Caitlin Clark is an obvious outlier here even looking at both teams. 
+
+After exploring the data in this way, I can conclude this section by saying that although Iowa has a better number in most of the categories, South Carolina's team seems like they carry a more equal load as a team. I say this because Caitlin Clark is an obvious outlier here, and with more time I think it would be cool to compare stats without her numbers being involved to see if Iowa is still that much better. 
+
+This conclusion came to fruition during the NCAA Championship game for Women's basketball with South Carolina winning the game and Iowa coming in second for the tournament. 
 
 Next...
 
 Has Caitlin Clark always been this good? 
 
-Read in new data sets from freshman-junior year
-
 ```{r}
-url4 <- "https://www.espn.com/womens-college-basketball/player/stats/_/id/4433403/caitlin-clark"
+url4 <- "https://herhoopstats.com/stats/ncaa/player/caitlin-clark-stats-11eb2f34-a838-c400-aa81-12df17ae4e1e/"
 
 h4 <- read_html(url4)
 
 tab4 <- h4 |> html_nodes("table")
 
-#stats with no names
-caitlinclark_df <- tab4[[4]] |> html_table(fill = TRUE)
+length(tab4)
 
-#names table
-df1 <- tab4[[5]] |> html_table(fill = TRUE)
+clark_df <- tab4[[2]] |> html_table(fill = TRUE) 
 
-clark_stats <- bind_cols(df1, caitlinclark_df)
+##asked chat GPT how to get rid of commas within character argument so I can turn it into an INT without it making them NA values, it told me to use gsub()
+clark_df$PTS <- gsub(",", "", clark_df$PTS)
+
+
+# convert to integer from character
+clark_df$PTS <- as.integer(clark_df$PTS)
 ```
+
+This data is on Caitlin Clarks historical data throughout the yearrs with a similar layout ats the sets used above. The new data set is from the herhoopstatscom page, I had to use this website because I originally used the ESPN website but since Clark was drafted to the WNBA after I started doing this project, the website had since been changed and the table stats I was using before are no longer there. 
+
+This data set includes variables such as:
+
+season: The year of the season played
+
+team: The team she was playing for
+
+G/GS: Games played
+
+MIN: Minutes played
+
+PTS: Points
+
+FGM: Field goals made
+
+FGA: Field goals attempted
+
+FG%: Field goal percentage
+
+2PM: 2-pointers made
+
+TOV: Turnovers
+
+There are more, but they are irrelevant for what I'm focusing on
+
 
 ```{r}
 ggplot(clark_df, aes(x = season, y = PTS)) +
-  geom_bar(stat = "identity", fill = "skyblue", color = "blue") +
-  labs(title = "Points (PTS) by Season", x = "Season", y = "PTS")
+  geom_bar(stat = "identity", fill = "skyblue", color = "black") +
+  labs(title = "Points (PTS) by Season", x = "Season", y = "PTS") 
 ```
 
-From this plot we see that from her freshman year, Caitlin had recorded around 800 points on the season. She has gotten progressively better, ending with her 2024 season total of 1234 points. It looks like she wasn't as good freshman year, but looking at the numbers we just see that she was already really good freshman year, she just took it to a whole new level years later especially her senior year. 
+From this plot we see that from her freshman year, Caitlin had recorded around 800 points on the season. She has gotten progressively better, ending with her 2024 season total of 1234 points. It looks like she wasn't as good freshman year, but looking at the numbers we see that she was already really good freshman year, she just took it to a whole new level years later especially her senior year. 
 
 ```{r}
-ggplot(clark_df, aes(x = season, y = REB)) +
-  geom_bar(stat = "identity", fill = "lightgreen", color = "green4") +
-  labs(title = "Rebounds (REB) by Season", x = "Season", y = "REB")
+ggplot(clark_df, aes(x = season, y = FGM)) +
+  geom_bar(stat = "identity", fill = "lightgreen", color = "black") +
+  labs(title = "Field Goals Made (FGM) by Season", x = "Season", y = "FGM")
 ```
 Looking at rebounds we see the same thing, her freshman year number is very good for # of rebounds on the season, but she takes it to another level when looking at preceding years with senior year at around almost 300 rebounds on the season. 
 
 
 ```{r}
 ggplot(clark_df, aes(x = season, y = AST)) +
-  geom_bar(stat = "identity", fill = "orange", color = "orange4") +
+  geom_bar(stat = "identity", fill = "orange", color = "black") +
   labs(title = "Assists (AST) by Season", x = "Season", y = "AST")
 ```
 
 ```{r}
-ggplot(clark_df, aes(x = season, y = TO)) +
-  geom_bar(stat = "identity", fill = "lightcoral", color = "red") +
-  labs(title = "Turnovers (TO) by Season", x = "Season", y = "TO")
+ggplot(clark_df, aes(x = season, y = TOV)) +
+  geom_bar(stat = "identity", fill = "lightcoral", color = "black") +
+  labs(title = "Caused Turnovers (TOV) by Season", x = "Season", y = "TOV")
+```
+Through these examinations, we see an overall trend of Caitlin increasing and getting better as years progress. An important thing to note though, is that her initial first year numbers are still well above normal scoring and she was extremely accomplished even after her first year on the team. 
+
+Conclusion:
+
+From the beginning to the end, I can confidently say that these two teams are something special and highly talented. Caitlin Clark has left a lasting impact on her program, the sport, and women's sports in general. To answer my questions, I do believe Iowa deserved to win the National championship from a stats point of view, although Caitlin Clark was an outlier and may have skewed the numbers slightly in favor of Iowa, their second scorer also had more than the top scorer on South Carolina. Although the numbers on most of the comparisons where close, Iowa won that battle every time. To answer the question if Caitlin Clark has always been this good, I would say yes she has always been this good and opened a new door for the game and the level of it during the 2024 season. Scoring more than 500 points on a season means you are a good player. Caitlin scored 799 points her freshman year which is incredibly high and takes a lot of talent to do in one season. To end a final season with not only over 1000 points, but almost a thousand and a half points is an incredible feat and will be really hard to surpass, if possible, in years to come. Catilin left a lasting impact on the program, and the sport as a whole, and is really interesting to look into. 
+
+With more time, I would 100% explore how Iowa performs without Caitlin Clark either by removing her from the data set or waiting a year for this coming season's data since she is now in the WNBA. Some limitations of my visuals are that bar plots are slightly basic, but comparison wise I feel they do a good straightforward job at making it easy to see progress through time. Also quick to note is the scale on the South Carolina top scorers lolipop plot, I changed the axis so it matched the axis of the Iowa plot, originally it seemed like South Carolina was a much better team with a lower scale. 
+
+```{r}
+library(knitr)
+library(here)
+clark <- ("~/Home/Desktop/ds334_final_project/clark.jpeg")
+include_graphics(here("clark.jpeg"))
 ```
 
 
-Slides:
-
-Introduce data
-
-a couple of visualizations (1 or 2)
 
 
 
