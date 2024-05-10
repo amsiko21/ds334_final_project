@@ -109,8 +109,9 @@ summary_south_carolina <- sc_stats |>
 
 combined_summary <- bind_rows(
   mutate(summary_iowa, Team = "Iowa"),
-  mutate(summary_south_carolina, Team = "South Carolina")) |>
-  pander()
+  mutate(summary_south_carolina, Team = "South Carolina")) 
+
+combined_summary |> pander()
 ```
 From this table, we see that out of the starters and possible subs, Iowa has 60.2 more points on average for the season than South Carolina. To analyze this number further, I want to look at Field Goals Made, because the number of points doesn't tell us much on it's own knowing each basket has a different point value.
 
@@ -130,8 +131,9 @@ summary_south_carolina2 <- sc_stats |>
 
 combined_summary2 <- bind_rows(
   mutate(summary_iowa2, Team = "Iowa"),
-  mutate(summary_south_carolina2, Team = "South Carolina")) |>
-  pander()
+  mutate(summary_south_carolina2, Team = "South Carolina")) 
+
+combined_summary2 |> pander()
 ```
 
 From this table, Iowa has a better average for field goals made with 5.3 more made on average than South Carolina. This tells us that Iowa has a higher average of points total, but the accuracy of the two teams is relatively similar when it comes to average field goals actually made. An explanation for the first number being much higher could be that Iowa may have more high value points, so I want to look at that next. 
@@ -149,8 +151,9 @@ summary_south_carolina3 <- sc_stats |>
 
 combined_summary3 <- bind_rows(
   mutate(summary_iowa3, Team = "Iowa"),
-  mutate(summary_south_carolina3, Team = "South Carolina")) |>
-  pander()
+  mutate(summary_south_carolina3, Team = "South Carolina")) 
+
+combined_summary3 |> pander()
 ```
 From this, we can see something that I had a feeling about from the previous tables. Iowa has almost double the amount of three pointers made than South Carolina. This tells us that the points average has a bigger margin of difference between the teams because Iowa simply scores higher value points more often than South Carolina.
 
@@ -169,8 +172,9 @@ summary_south_carolina4 <- sc_stats |>
 
 combined_summary4 <- bind_rows(
   mutate(summary_iowa4, Team = "Iowa"),
-  mutate(summary_south_carolina4, Team = "South Carolina")) |>
-  pander()
+  mutate(summary_south_carolina4, Team = "South Carolina")) 
+
+combined_summary4 |> pander()
 ```
 From this, we see that Iowa has a higher number of free throws made on average with 24.58 more made. This doesn't give a definitive answer on anything, but in terms of making a play that could mean a lot under pressure, Iowa looks like they have a slight advantage here.
 
